@@ -25,30 +25,26 @@ export default function FilterContainer() {
     setShowAll({ Countries: false, State: false, District: false });
   };
 
-  const getStatesByCountry = (country) => {
-    return country === "India"
+  const getStatesByCountry = (country) =>
+    country === "India"
       ? StatesAndDistricts.states.map((state) => state.state)
       : [];
-  };
 
   const getDistrictsByStates = (states) => {
     const validStates = Array.isArray(states) ? states : [];
-    const districts = validStates
-      .flatMap((state) => {
-        const stateData = StatesAndDistricts.states.find(
-          (s) => s.state === state
-        );
-        return stateData ? stateData.districts : [];
-      });
+    const districts = validStates.flatMap((state) => {
+      const stateData = StatesAndDistricts.states.find(
+        (s) => s.state === state
+      );
+      return stateData ? stateData.districts : [];
+    });
 
-    return [...new Set(districts)]; // Remove duplicates
+    return [...new Set(districts)];
   };
 
   const handleCheckboxChange = (title, item) => {
     setFilters((prevFilters) => {
-      const currentItems = Array.isArray(prevFilters[title])
-        ? prevFilters[title]
-        : [];
+      const currentItems = prevFilters[title] || [];
       return {
         ...prevFilters,
         [title]: currentItems.includes(item)
@@ -58,7 +54,6 @@ export default function FilterContainer() {
     });
   };
 
-  // Reset dependent filters when Countries or State changes
   useEffect(() => {
     if (filters.Countries.length === 0) {
       setFilters((prev) => ({ ...prev, State: [], District: [] }));
@@ -80,7 +75,7 @@ export default function FilterContainer() {
     showMore,
     setShowMore
   ) => (
-    <div className="flex flex-col px-5 mt-3 w-full text-xs text-slate-950 max-h-48 overflow-y-scroll">
+    <div className="flex flex-col px-5 mt-3 w-full text-xs text-slate-950 max-h-48 overflow-y-auto scrollbar-custom">
       <h3 className="text-sm font-bold">{title}</h3>
       <input
         type="text"
@@ -89,12 +84,14 @@ export default function FilterContainer() {
         onChange={(e) => onChange(e.target.value)}
         className="border-b focus:outline-none text-xs text-zinc-400 mt-2.5"
       />
-      <hr className="my-2 border-zinc-400" />
       {items
         .filter((item) => item.toLowerCase().includes(term.toLowerCase()))
-        .slice(0, showMore ? items.length : 1)
+        .slice(0, showMore ? items.length : 5)
         .map((item, idx) => (
-          <div key={idx} className="flex items-center gap-2 mt-2">
+          <label
+            key={idx}
+            className="flex items-center gap-2 mt-2 cursor-pointer"
+          >
             <input
               type="checkbox"
               checked={selectedItems.includes(item)}
@@ -102,21 +99,21 @@ export default function FilterContainer() {
               className="mr-2"
             />
             <span>{item}</span>
-          </div>
+          </label>
         ))}
-      {items.length > 1 && !showMore && (
+      {items.length > 5 && (
         <button
           onClick={() => setShowMore((prev) => !prev)}
           className="mt-2 text-indigo-700"
         >
-          + more
+          {showMore ? "Show less" : "+ more"}
         </button>
       )}
     </div>
   );
 
   return (
-    <section className="flex flex-col pt-5 bg-white rounded-2xl max-w-[261px]">
+    <section className="flex flex-col pt-5 bg-white rounded-2xl max-w-[261px] h-screen overflow-hidden">
       <header className="flex gap-5 justify-between w-full px-5">
         <h2 className="text-base font-bold text-slate-950">Filters</h2>
         <button

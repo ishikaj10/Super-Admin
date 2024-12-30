@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import edit from "../assets/images/edit.png";
 import deleteicon from "../assets/images/delete.png";
 import view from "../assets/images/view.png";
 import FilterContainer from "./filter/filter";
+import { axiosClient } from "../services/axiosClient";
+import EndPoints from "../services/EndPoints";
+import toast from "react-hot-toast";
 
 export default function Client() {
   const [selectedTab, setSelectedTab] = useState("All");
+  const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState([
     {
       id: 1,
@@ -24,6 +28,26 @@ export default function Client() {
     { id: 3, country: "UK", state: "London", city: "London", status: "Active" },
   ]);
 
+  // Fetches the admin list from the server
+  const getAdmins = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosClient.get(EndPoints.ADMINS);
+      if (response?.statusCode === 200) {
+        setRequests(response?.result);
+      }
+    } catch (e) {
+      toast.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load admins data when component mounts
+  useEffect(() => {
+    // getAdmins();
+  }, []);
+
   const filteredRequests =
     selectedTab === "All"
       ? requests
@@ -41,8 +65,10 @@ export default function Client() {
       </div>
 
       {/* clients data */}
-      <div className="w-[78%] h-[500px] bg-white">
-        <div className="pt-2 pl-4">Client</div>
+      <div className="w-[78%] h-[500px] bg-white rounded-[14px]">
+        <div className="pt-5 px-5 text-[#040320] text-base font-semibold ">
+          Client
+        </div>
 
         <div className="flex space-x-4 mt-4">
           <div className="text-xs font-semibold w-[75px] text-center">
@@ -66,7 +92,7 @@ export default function Client() {
         <hr className="border-[#9391A5]/25 -translate-y-[1px]" />
 
         <section className="flex justify-between gap-2.5 pl-5 mt-2">
-          <div className="flex items-center gap-2.5 py-2 pr-4 bg-blue-50 rounded-2xl w-[410px] text-neutral-400">
+          <div className="flex items-center gap-2.5 py-2 px-4 bg-blue-50 rounded-2xl w-[410px] text-neutral-400">
             <img
               loading="lazy"
               src="https://cdn.builder.io/api/v1/image/assets/TEMP/397260c6dace147fe4b2545df7c423ddfb04a53f39978afd337c8774f24443b2?placeholderIfAbsent=true&apiKey=a8cc6c1bf626485c842deb8f5c2a2105"
@@ -133,9 +159,21 @@ export default function Client() {
                 </td>
                 <td className="py-2 px-4 border">
                   <div className="flex justify-evenly">
-                    <img src={deleteicon} className="size-5" alt="" />
-                    <img src={view} className="size-5" alt="" />
-                    <img src={edit} className="size-5" alt="" />
+                    <img
+                      src={deleteicon}
+                      className="size-5 cursor-not-allowed"
+                      alt=""
+                    />
+                    <img
+                      src={view}
+                      className="size-5 cursor-pointer"
+                      alt=""
+                    />
+                    <img
+                      src={edit}
+                      className="size-5 cursor-not-allowed"
+                      alt=""
+                    />
                   </div>
                 </td>
               </tr>

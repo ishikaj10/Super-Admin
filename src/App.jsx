@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../src/Components/Navbar";
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Client from "./Components/Client";
+import { useDispatch } from "react-redux";
+import { setAuthData } from "./store/AppAuthSlice";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      dispatch(setAuthData(token));
+    }
+  }, [dispatch]);
+
   return (
     <>
       <Navbar />
-      <Client />
-
-      {/* <Routes>
-        <Route path="/" element={<Navbar />} />
-      </Routes> */}
+      <Routes>
+        <Route path="/" element={<Client />} />
+      </Routes>
     </>
   );
 }
