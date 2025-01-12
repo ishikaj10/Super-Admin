@@ -1,27 +1,10 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const baseURL = "https://nisaiji.com/";
+// const baseURL = "https://nisaiji.com/";
+const baseURL = "http://localhost:4000/";
 
 export const axiosClient = axios.create({ baseURL });
-
-// Function to request a new access token using the refresh token
-async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem("refresh_token");
-  if (!refreshToken) {
-    return null;
-  }
-  try {
-    const response = await axios.get(`${baseURL}admin/refresh`, {
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-      },
-    });
-    return response?.data?.result?.accessToken;
-  } catch (error) {
-    return null;
-  }
-}
 
 axiosClient.interceptors.request.use(
   (request) => {
@@ -42,30 +25,15 @@ axiosClient.interceptors.response.use(
     }
 
     if (data?.statusCode === 500 && data?.message === "jwt expired") {
-      const originalRequest = response.config;
-
-      // Try refreshing the token
-      const newAccessToken = await refreshAccessToken();
-
-      if (newAccessToken) {
-        localStorage.setItem("access_token", newAccessToken);
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-
-        // Retry the original request with the new access token
-        return axiosClient(originalRequest);
-      } else {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        window.location.replace("/login", "_self");
-        return Promise.reject(data?.message);
-      }
+      localStorage.removeItem("access_token");
+      window.location.replace("/login", "_self");
+      return Promise.reject(data?.message);
     }
     if (data?.status == "error") {
       return Promise.reject(data?.message);
     }
   },
   async (error) => {
-    // console.log({error});
     if (error?.message === "Network Error") {
       toast.error("Check your internet connectivity");
       return;

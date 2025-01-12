@@ -27,6 +27,9 @@ const Navbar = () => {
       closeMenus();
     }
   };
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
@@ -45,11 +48,11 @@ const Navbar = () => {
         </div>
 
         <div className="flex space-x-12">
-          <div className="text-[#040320] px-2 py-2 text-base font-bold rounded-md relative">
+          <div className="text-[#040320] hover:text-[#4834D4] cursor-pointer px-2 py-2 text-base font-bold rounded-md relative">
             client
           </div>
           <div className="py-2">
-            <span className="text-[#040320] hover:text-[#4834D4] text-base font-bold">
+            <span className="text-[#040320] hover:text-[#4834D4] cursor-pointer text-base font-bold">
               analysis
             </span>
           </div>
@@ -71,11 +74,11 @@ const Navbar = () => {
                 className="absolute top-full right-0 w-[120px] text-[#040320] hover:text-[#4834D4] hover:bg-white bg-white rounded-xl shadow-lg z-10 justify-items-center"
                 onClick={closeMenus}
               >
-                <div className="py-1">
+                <Link to="/login" className="py-1" onClick={handleLogout}>
                   <div className="block px-4 py-3 text-[#040320] hover:text-[#4834D4] hover:bg-white">
                     logout
                   </div>
-                </div>
+                </Link>
               </div>
             )}
           </div>

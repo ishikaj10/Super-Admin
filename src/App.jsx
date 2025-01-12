@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
-import Navbar from "../src/Components/Navbar";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Client from "./Components/Client";
+import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuthData } from "./store/AppAuthSlice";
+import Client from "./Components/Client";
+import Login from "./Components/Login";
+import RequireUser from "./Components/RequireUser";
+import AdminProfile from "./Components/AdminProfile";
+import NotRequireUser from "./Components/NotRequireUser";
+import Home from "./Components/Home";
 
 function App() {
   const dispatch = useDispatch();
-
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
@@ -17,9 +20,16 @@ function App() {
 
   return (
     <>
-      <Navbar />
       <Routes>
-        <Route path="/" element={<Client />} />
+        <Route element={<RequireUser />}>
+          <Route path="/" element={<Home />}>
+            <Route path="/" element={<Client />} />
+            <Route path="/adminProfile" element={<AdminProfile />} />
+          </Route>
+        </Route>
+        <Route element={<NotRequireUser />}>
+          <Route path="/login" element={<Login />} />
+        </Route>
       </Routes>
     </>
   );
