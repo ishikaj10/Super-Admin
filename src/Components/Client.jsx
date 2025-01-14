@@ -40,11 +40,11 @@ export default function Client() {
     selectedTab === "All"
       ? requests
       : selectedTab === "Active"
-      ? requests.filter((req) => req.isActive === true)
+      ? requests.filter((req) => req?.isActive === true)
       : selectedTab === "Inactive"
-      ? requests.filter((req) => req.isActive === false)
-      : selectedTab === "Requests"
-      ? requests.filter((req) => req.isActive === false)
+      ? requests.filter((req) => req?.isActive === false)
+      : selectedTab === "New Requests"
+      ? requests.filter((req) => req?.disableCount === 0)
       : requests;
 
   const handleChangePermission = async (id, status) => {
@@ -55,7 +55,6 @@ export default function Client() {
         { active: !status }
       );
       if (response?.statusCode === 200) {
-        console.log(response);
         toast.success(response?.result);
         getAdmins();
       }
@@ -84,10 +83,10 @@ export default function Client() {
           <div className="text-xs font-semibold w-[75px] text-center">
             Sort by
           </div>
-          {["All", "Active", "Inactive"].map((tab) => (
+          {["All", "Active", "Inactive", "New Requests"].map((tab) => (
             <div
               key={tab}
-              className={`cursor-pointer text-xs font-semibold w-[75px] text-center ${
+              className={`cursor-pointer text-xs font-semibold w-[80px] text-center ${
                 selectedTab === tab
                   ? "pb-3 border-b-[3px] border-[#4834d4]"
                   : ""
@@ -142,6 +141,7 @@ export default function Client() {
                 <th className="py-2 text-center px-4 border">Country</th>
                 <th className="py-2 text-center px-4 border">State</th>
                 <th className="py-2 text-center px-4 border">City</th>
+                <th className="py-2 text-center px-4 border">Status Change</th>
                 <th className="py-2 text-center px-4 border">Status</th>
                 <th className="py-2 text-center px-4 border">Action</th>
               </tr>
@@ -161,6 +161,9 @@ export default function Client() {
                   </td>
                   <td className="py-2 px-4 text-center border">
                     {client.city}
+                  </td>
+                  <td className="py-2 px-4 text-center border">
+                    {client?.disableCount}
                   </td>
                   <td className="py-2 px-4 text-center border">
                     <span

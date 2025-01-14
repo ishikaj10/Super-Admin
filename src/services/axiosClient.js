@@ -1,8 +1,8 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-// const baseURL = "https://nisaiji.com/";
-const baseURL = "http://localhost:4000/";
+const baseURL = "https://nisaiji.com/";
+// const baseURL = "http://localhost:4000/";
 
 export const axiosClient = axios.create({ baseURL });
 
@@ -24,16 +24,20 @@ axiosClient.interceptors.response.use(
       return data;
     }
 
-    if (data?.statusCode === 500 && data?.message === "jwt expired") {
-      localStorage.removeItem("access_token");
-      window.location.replace("/login", "_self");
-      return Promise.reject(data?.message);
-    }
     if (data?.status == "error") {
       return Promise.reject(data?.message);
     }
   },
   async (error) => {
+    if (
+      error?.response?.data?.statusCode === 500 &&
+      error?.response?.data?.message === "jwt expired"
+    ) {
+      localStorage.removeItem("access_token");
+      window.location.replace("/login", "_self");
+      toast.error(error?.response?.data?.message);
+      return;
+    }
     if (error?.message === "Network Error") {
       toast.error("Check your internet connectivity");
       return;
