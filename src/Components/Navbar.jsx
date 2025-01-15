@@ -48,14 +48,14 @@ const Navbar = () => {
         </div>
 
         <div className="flex space-x-12">
-          <div className="text-[#040320] hover:text-[#4834D4] cursor-pointer px-2 py-2 text-base font-bold rounded-md relative">
+          {/* <div className="text-[#040320] hover:text-[#4834D4] cursor-pointer px-2 py-2 text-base font-bold rounded-md relative">
             client
           </div>
           <div className="py-2">
             <span className="text-[#040320] hover:text-[#4834D4] cursor-pointer text-base font-bold">
               analysis
             </span>
-          </div>
+          </div> */}
           <div
             className="relative rounded-xl mr-5"
             onMouseEnter={() => setProfileMenuOpen(true)}
