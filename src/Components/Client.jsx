@@ -6,6 +6,7 @@ import { axiosClient } from "../services/axiosClient";
 import EndPoints from "../services/EndPoints";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ConformationPopup from "./ConfirmPopop";
 
 export default function Client() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ export default function Client() {
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showConformationPopup, setShowConformationPopup] = useState(false);
+  const [currentRequest, setCurrentRequest] = useState({});
 
   // Fetches the admin list from the server
   const getAdmins = async () => {
@@ -38,9 +41,15 @@ export default function Client() {
     const query = searchQuery.toLowerCase();
     return (
       (selectedTab === "All" ||
-        (selectedTab === "Active" && req?.isActive) ||
-        (selectedTab === "Inactive" && !req?.isActive) ||
-        (selectedTab === "New Requests" && req?.disableCount === 0)) &&
+        (selectedTab === "Active" &&
+          req?.isActive &&
+          req?.statusChangeCount !== 0) ||
+        (selectedTab === "Inactive" &&
+          !req?.isActive &&
+          req?.statusChangeCount !== 0) ||
+        (selectedTab === "New Requests" &&
+          !req?.isActive &&
+          req?.statusChangeCount === 0)) &&
       (req?.schoolName?.toLowerCase().includes(query) ||
         req?.city?.toLowerCase().includes(query) ||
         req?.state?.toLowerCase().includes(query) ||
@@ -63,6 +72,7 @@ export default function Client() {
       toast.error(e);
     } finally {
       setLoading(false);
+      setShowConformationPopup(false);
     }
   };
 
@@ -75,23 +85,33 @@ export default function Client() {
           Client
         </div>
 
-        <div className="flex space-x-4 mt-4">
-          <div className="text-xs font-semibold w-[75px] text-center">
-            Sort by
-          </div>
-          {["All", "Active", "Inactive", "New Requests"].map((tab) => (
-            <div
-              key={tab}
-              className={`cursor-pointer text-xs font-semibold w-[85px] text-center ${
-                selectedTab === tab
-                  ? "pb-3 border-b-[3px] border-[#4834d4]"
-                  : ""
-              }`}
-              onClick={() => setSelectedTab(tab)}
-            >
-              {tab}
+        <div className="flex justify-between items-center">
+          <div className="flex space-x-4 mt-4">
+            <div className="text-xs font-semibold w-[75px] text-center">
+              Sort by
             </div>
-          ))}
+            {["All", "Active", "Inactive", "New Requests"].map((tab) => (
+              <div
+                key={tab}
+                className={`cursor-pointer text-xs font-semibold w-[85px] text-center ${
+                  selectedTab === tab
+                    ? "pb-3 border-b-[3px] border-[#4834d4]"
+                    : ""
+                }`}
+                onClick={() => setSelectedTab(tab)}
+              >
+                {tab}
+              </div>
+            ))}
+          </div>
+          <div>
+            <button
+              className="px-4 py-2 text-xs font-semibold border border-black text-black rounded-xl cursor-pointer "
+              onClick={() => getAdmins()}
+            >
+              Refresh
+            </button>
+          </div>
         </div>
 
         <hr className="border-[#9391A5]/25 -translate-y-[1px]" />
@@ -140,7 +160,7 @@ export default function Client() {
                     {client?.country}
                   </td>
                   <td className="py-2 px-4 text-center border">
-                    {client?.disableCount}
+                    {client?.statusChangeCount}
                   </td>
                   <td className="py-2 px-4 text-center border">
                     <span
@@ -174,12 +194,13 @@ export default function Client() {
                               : "cursor-not-allowed"
                           }`}
                           alt=""
-                          onClick={() =>
-                            handleChangePermission(
-                              client?._id,
-                              client?.isActive
-                            )
-                          }
+                          onClick={() => {
+                            setShowConformationPopup(true);
+                            setCurrentRequest({
+                              id: client?._id,
+                              status: client?.isActive,
+                            });
+                          }}
                         />
                       ) : (
                         <img
@@ -190,12 +211,13 @@ export default function Client() {
                               : "cursor-not-allowed"
                           }`}
                           alt=""
-                          onClick={() =>
-                            handleChangePermission(
-                              client?._id,
-                              client?.isActive
-                            )
-                          }
+                          onClick={() => {
+                            setShowConformationPopup(true);
+                            setCurrentRequest({
+                              id: client?._id,
+                              status: client?.isActive,
+                            });
+                          }}
                         />
                       )}
                     </div>
@@ -210,6 +232,16 @@ export default function Client() {
           </div>
         )}
       </div>
+      <ConformationPopup
+        isVisible={showConformationPopup}
+        onClose={() => setShowConformationPopup(false)}
+        onSubmit={() => {
+          handleChangePermission(currentRequest?.id, currentRequest?.status);
+        }}
+        message={`Are you sure you want to ${
+          currentRequest?.status ? "Pause" : "Restart"
+        } this school`}
+      />
     </div>
   );
 }
