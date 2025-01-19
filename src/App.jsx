@@ -8,6 +8,7 @@ import RequireUser from "./Components/RequireUser";
 import AdminProfile from "./Components/AdminProfile";
 import NotRequireUser from "./Components/NotRequireUser";
 import Home from "./Components/Home";
+import CustomerQuery from "./Components/CustomerQuery";
 
 function App() {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ function App() {
           <Route path="/" element={<Home />}>
             <Route path="/" element={<Client />} />
             <Route path="/adminProfile" element={<AdminProfile />} />
+            <Route path="/query" element={<CustomerQuery />} />
           </Route>
         </Route>
         <Route element={<NotRequireUser />}>
