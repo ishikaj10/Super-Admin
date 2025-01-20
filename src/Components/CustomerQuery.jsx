@@ -6,15 +6,16 @@ import { axiosClient } from "../services/axiosClient";
 import EndPoints from "../services/EndPoints";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import ConformationPopup from "./ConfirmPopop";
+import QueryView from "./QueryView";
 
 export default function CustomerQuery() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("All");
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState([]);
   // const [searchQuery, setSearchQuery] = useState("");
-  // const [showConformationPopup, setShowConformationPopup] = useState(false);
+  const [showQueryPopup, setShowQueryPopup] = useState(false);
+  const [currentQuery, setCurrentQuery] = useState([]);
   // const [currentRequest, setCurrentRequest] = useState({});
 
   // Fetches the admin list from the server
@@ -32,7 +33,7 @@ export default function CustomerQuery() {
       setLoading(false);
     }
   };
-  console.log(requests);
+  // console.log(requests);
 
   // Load admins data when component mounts
   useEffect(() => {
@@ -87,8 +88,8 @@ export default function CustomerQuery() {
           Customer Query
         </div>
 
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-4 mt-4">
+        <div className="flex justify-end items-center mx-2">
+          {/* <div className="flex space-x-4 mt-4">
             <div className="text-xs font-semibold w-[75px] text-center">
               Sort by
             </div>
@@ -105,8 +106,8 @@ export default function CustomerQuery() {
                 {tab}
               </div>
             ))}
-          </div>
-          <div>
+          </div> */}
+          <div className="pb-3">
             <button
               className="px-4 py-2 text-xs font-semibold border border-black text-black rounded-xl cursor-pointer "
               onClick={() => getQuery()}
@@ -136,23 +137,26 @@ export default function CustomerQuery() {
           <table className="w-full mt-4 border-collapse">
             <thead>
               <tr className="bg-gray-100 text-left text-sm text-gray-600">
-                <th className="py-2 text-center px-4 border">Full Name</th>
                 <th className="py-2 text-center px-4 border">School Name</th>
+                <th className="py-2 text-center px-4 border">Email</th>
+                <th className="py-2 text-center px-4 border">Phone</th>
                 <th className="py-2 text-center px-4 border">City</th>
                 <th className="py-2 text-center px-4 border">State</th>
-                <th className="py-2 text-center px-4 border">Phone</th>
+                <th className="py-2 text-center px-4 border">Action</th>
                 {/* <th className="py-2 text-center px-4 border">Status</th> */}
-                {/* <th className="py-2 text-center px-4 border">Action</th> */}
               </tr>
             </thead>
             <tbody>
               {requests?.map((client, index) => (
                 <tr key={index} className="text-sm text-gray-700">
                   <td className="py-2 px-4 text-center border">
-                    {client?.firstname} {client?.lastname}
+                    {client?.schoolName}
                   </td>
                   <td className="py-2 px-4 text-center border">
-                    {client?.schoolName}
+                    {client?.email}
+                  </td>
+                  <td className="py-2 px-4 text-center border">
+                    {client?.phone}
                   </td>
                   <td className="py-2 px-4 text-center border">
                     {client?.city}
@@ -161,58 +165,19 @@ export default function CustomerQuery() {
                     {client?.state}
                   </td>
 
-                  <td className="py-2 px-4 text-center border">
-                    {client?.phone}
-                  </td>
-                  {/* <td className="py-2 px-4 border">
+                  <td className="py-2 px-4 border">
                     <div className="flex justify-evenly">
                       <img
                         src={view}
                         className="size-5 cursor-pointer"
                         alt=""
-                        onClick={() =>
-                          navigate("/adminProfile", {
-                            state: client,
-                          })
-                        }
+                        onClick={() => {
+                          setShowQueryPopup(true);
+                          setCurrentQuery(client);
+                        }}
                       />
-                      {client?.isActive ? (
-                        <img
-                          src={deleteicon}
-                          className={`size-5 ${
-                            client?.isActive
-                              ? "cursor-pointer"
-                              : "cursor-not-allowed"
-                          }`}
-                          alt=""
-                          onClick={() => {
-                            setShowConformationPopup(true);
-                            setCurrentRequest({
-                              id: client?._id,
-                              status: client?.isActive,
-                            });
-                          }}
-                        />
-                      ) : (
-                        <img
-                          src={active}
-                          className={`size-5 ${
-                            !client?.isActive
-                              ? "cursor-pointer"
-                              : "cursor-not-allowed"
-                          }`}
-                          alt=""
-                          onClick={() => {
-                            setShowConformationPopup(true);
-                            setCurrentRequest({
-                              id: client?._id,
-                              status: client?.isActive,
-                            });
-                          }}
-                        />
-                      )}
                     </div>
-                  </td> */}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -223,16 +188,11 @@ export default function CustomerQuery() {
           </div>
         )}
       </div>
-      {/* <ConformationPopup
-        isVisible={showConformationPopup}
-        onClose={() => setShowConformationPopup(false)}
-        onSubmit={() => {
-          handleChangePermission(currentRequest?.id, currentRequest?.status);
-        }}
-        message={`Are you sure you want to ${
-          currentRequest?.status ? "Pause" : "Restart"
-        } this school`}
-      /> */}
+      <QueryView
+        data={currentQuery}
+        isVisible={showQueryPopup}
+        onClose={() => setShowQueryPopup(false)}
+      />
     </div>
   );
 }

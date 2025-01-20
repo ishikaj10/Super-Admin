@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import active from "../assets/images/active.png";
 import deleteicon from "../assets/images/delete.png";
+import refresh from "../assets/images/refresh.png";
 import view from "../assets/images/view.png";
 import { axiosClient } from "../services/axiosClient";
 import EndPoints from "../services/EndPoints";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ConformationPopup from "./ConfirmPopop";
+import CONSTANT from "../utils/Constants";
+import moment from "moment";
 
 export default function Client() {
   const navigate = useNavigate();
@@ -75,6 +78,7 @@ export default function Client() {
       setShowConformationPopup(false);
     }
   };
+  // console.log(requests);
 
   return (
     <div className="flex flex-row justify-between pt-4 bg-gray-50">
@@ -85,7 +89,7 @@ export default function Client() {
           Client
         </div>
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mx-2">
           <div className="flex space-x-4 mt-4">
             <div className="text-xs font-semibold w-[75px] text-center">
               Sort by
@@ -106,10 +110,11 @@ export default function Client() {
           </div>
           <div>
             <button
-              className="px-4 py-2 text-xs font-semibold border border-black text-black rounded-xl cursor-pointer "
+              className="flex justify-center items-center px-4 py-2 text-xs font-semibold border border-black text-black rounded-xl cursor-pointer "
               onClick={() => getAdmins()}
             >
               Refresh
+              <img src={refresh} alt="" className="size-3 ml-2" />
             </button>
           </div>
         </div>
@@ -138,7 +143,13 @@ export default function Client() {
                 <th className="py-2 text-center px-4 border">City</th>
                 <th className="py-2 text-center px-4 border">State</th>
                 <th className="py-2 text-center px-4 border">Country</th>
-                <th className="py-2 text-center px-4 border">Status Change</th>
+                <th className="py-2 text-center px-4 border">Request On</th>
+                <th className="py-2 text-center px-4 border">Allowed On</th>
+                {selectedTab !== "New Requests" && (
+                  <th className="py-2 text-center px-4 border">
+                    Status Change
+                  </th>
+                )}
                 {selectedTab === "Active" || selectedTab === "Inactive" ? (
                   <></>
                 ) : (
@@ -151,21 +162,34 @@ export default function Client() {
               {filteredRequests.map((client, index) => (
                 <tr key={index} className="text-sm text-gray-700">
                   <td className="py-2 px-4 text-center border">
-                    {/* Client {index + 1} */}
-                    {client?.schoolName}
+                    {client?.schoolName || CONSTANT.NA}
                   </td>
                   <td className="py-2 px-4 text-center border">
-                    {client?.city}
+                    {client?.city || CONSTANT.NA}
                   </td>
                   <td className="py-2 px-4 text-center border">
-                    {client?.state}
+                    {client?.state || CONSTANT.NA}
                   </td>
                   <td className="py-2 px-4 text-center border">
-                    {client?.country}
+                    {client?.country || CONSTANT.NA}
                   </td>
                   <td className="py-2 px-4 text-center border">
-                    {client?.statusChangeCount}
+                    {client?.createdAt
+                      ? moment(client?.createdAt).format("DD-MM-YYYY")
+                      : CONSTANT.NA}
                   </td>
+                  <td className="py-2 px-4 text-center border">
+                    {client?.statusChangeCount !== 0
+                      ? moment(client?.statusChangeLog[0]?.changedAt).format(
+                          "DD-MM-YYYY"
+                        )
+                      : CONSTANT.NA}
+                  </td>
+                  {selectedTab !== "New Requests" && (
+                    <td className="py-2 px-4 text-center border">
+                      {client?.statusChangeCount}
+                    </td>
+                  )}
                   {selectedTab === "Active" || selectedTab === "Inactive" ? (
                     <></>
                   ) : (
@@ -255,8 +279,8 @@ export default function Client() {
           handleChangePermission(currentRequest?.id, currentRequest?.status);
         }}
         message={`Are you sure you want to ${
-          currentRequest?.status ? "Pause" : "Restart"
-        } this school`}
+          currentRequest?.status ? "pause" : "resume"
+        }?`}
       />
     </div>
   );
