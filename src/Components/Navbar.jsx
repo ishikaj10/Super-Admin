@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import profile from "../assets/images/profile.png";
+import logo from "../assets/images/deerlogo.png";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -25,6 +27,9 @@ const Navbar = () => {
       closeMenus();
     }
   };
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
@@ -37,25 +42,20 @@ const Navbar = () => {
     <div className="bg-white border-b border-gray-100 px-10 py-6 text-white sticky top-0 z-40">
       <div className="flex items-center justify-between">
         <div className="flex items-center ml-3">
-          <div className="flex items-center">
-            <div className="bg-[#4834D4] size-10 rounded-2xl flex justify-center items-center">
-              <span className="text-[24px] font-bold">A</span>
-            </div>
-            <span className="font-bold text-[24px] ml-2 text-[#040320]">
-              logo
-            </span>
-          </div>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="logo" className="size-9" />
+          </Link>
         </div>
 
         <div className="flex space-x-12">
-          <div className="text-[#040320] px-2 py-2 text-base font-bold rounded-md relative">
-            client
-          </div>
-          <div className="py-2">
-            <span className="text-[#040320] hover:text-[#4834D4] text-base font-bold">
+          <Link to='/query' className="text-[#040320] hover:text-[#4834D4] cursor-pointer px-2 py-2 text-base font-bold rounded-md relative">
+            Customer Query
+          </Link>
+          {/* <div className="py-2">
+            <span className="text-[#040320] hover:text-[#4834D4] cursor-pointer text-base font-bold">
               analysis
             </span>
-          </div>
+          </div> */}
           <div
             className="relative rounded-xl mr-5"
             onMouseEnter={() => setProfileMenuOpen(true)}
@@ -74,11 +74,11 @@ const Navbar = () => {
                 className="absolute top-full right-0 w-[120px] text-[#040320] hover:text-[#4834D4] hover:bg-white bg-white rounded-xl shadow-lg z-10 justify-items-center"
                 onClick={closeMenus}
               >
-                <div className="py-1">
+                <Link to="/login" className="py-1" onClick={handleLogout}>
                   <div className="block px-4 py-3 text-[#040320] hover:text-[#4834D4] hover:bg-white">
                     logout
                   </div>
-                </div>
+                </Link>
               </div>
             )}
           </div>
