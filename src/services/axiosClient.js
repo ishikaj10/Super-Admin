@@ -1,8 +1,9 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const baseURL = "https://nisaiji.com/";
+// const baseURL = "https://nisaiji.com/";
 // const baseURL = "http://localhost:4000/";
+const baseURL = "https://api.sharedri.com";
 
 export const axiosClient = axios.create({ baseURL });
 
@@ -39,8 +40,7 @@ axiosClient.interceptors.response.use(
       return;
     }
     if (error?.message === "Network Error") {
-      toast.error("Check your internet connectivity");
-      return;
+      return toast.error("Check your internet connectivity");
     }
     return Promise.reject(error?.response?.data?.message);
   }
