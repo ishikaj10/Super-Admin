@@ -121,17 +121,17 @@ function Login() {
                     "invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(90%) contrast(85%)",
                 }}
               />
+            </div>
               {formik.touched.password && formik.errors.password && (
                 <div className="text-red-500 text-xs">
                   {formik.errors.password}
                 </div>
               )}
-            </div>
-            <div className="text-white text-end text-sm mt-6">
+            {/* <div className="text-white text-end text-sm mt-6">
               <Link to="/forgot-password" className="text-[#040320]/70">
                 Forgot password?
               </Link>
-            </div>
+            </div> */}
             <div className="mt-6">
               <button
                 className="w-full py-1.5 text-center bg-[#0F4189] text-white font-poppins-bold rounded-lg disabled:opacity-50"
