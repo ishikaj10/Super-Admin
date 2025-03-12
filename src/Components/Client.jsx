@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import active from "../assets/images/active.png";
 import deleteicon from "../assets/images/delete.png";
 import refresh from "../assets/images/refresh.png";
+import cross from "../assets/images/cross.png";
 import view from "../assets/images/view.png";
 import { axiosClient } from "../services/axiosClient";
 import EndPoints from "../services/EndPoints";
@@ -10,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import ConformationPopup from "./ConfirmPopop";
 import CONSTANT from "../utils/Constants";
 import moment from "moment";
+import Breadcrumbs from "./BreadCrumbs";
 
 export default function Client() {
   const navigate = useNavigate();
@@ -86,21 +88,20 @@ export default function Client() {
       {/* clients data */}
       <div className="w-full h-[500px] mx-5 bg-white rounded-[14px]">
         <div className="pt-5 px-5 text-[#040320] text-base font-semibold ">
+          <Breadcrumbs />
           Client
         </div>
 
-        <div className="flex justify-between items-center mx-2">
-          <div className="flex space-x-4 mt-4">
-            <div className="text-xs font-semibold w-[75px] text-center">
-              Sort by
-            </div>
+        <div className="flex justify-between items-center p-4 bg-white rounded-lg shadow-sm">
+          {/* Tabs Section */}
+          <div className="flex space-x-4">
             {["All", "Active", "Inactive", "New Requests"].map((tab) => (
               <div
                 key={tab}
-                className={`cursor-pointer text-xs font-semibold w-[85px] text-center ${
+                className={`cursor-pointer text-sm font-medium px-3 py-2 transition-all rounded-md ${
                   selectedTab === tab
-                    ? "pb-3 border-b-[3px] border-[#4834d4]"
-                    : ""
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-blue-500"
                 }`}
                 onClick={() => setSelectedTab(tab)}
               >
@@ -108,31 +109,39 @@ export default function Client() {
               </div>
             ))}
           </div>
-          <div>
+
+          {/* Search & Refresh Section */}
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <input
+                id="clientSearch"
+                type="text"
+                placeholder="Search by School Name, City, State, or Country"
+                className="w-96 pl-3 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  onClick={() => setSearchQuery("")}
+                >
+                  <img src={cross} alt="Clear" className="w-7 h-7" />
+                </button>
+              )}
+            </div>
             <button
-              className="flex justify-center items-center px-4 py-2 text-xs font-semibold border border-black text-black rounded-xl cursor-pointer "
+              className="flex items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
               onClick={() => getAdmins()}
             >
               Refresh
-              <img src={refresh} alt="" className="size-3 ml-2" />
+              <img src={refresh} alt="Refresh" className="w-3 h-3 ml-2" />
             </button>
           </div>
         </div>
 
         <hr className="border-[#9391A5]/25 -translate-y-[1px]" />
-
-        <section className="flex justify-between gap-2.5 pl-5 mt-2">
-          <div className="flex items-center gap-2.5 py-2 px-4 bg-blue-50 rounded-2xl w-[410px] text-neutral-400">
-            <input
-              id="clientSearch"
-              type="text"
-              placeholder="Search by School Name, City, State, or Country"
-              className="w-full bg-transparent focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </section>
 
         {/* Client Table */}
         {filteredRequests.length > 0 ? (
@@ -207,7 +216,7 @@ export default function Client() {
                           ? "IN-ACTIVE"
                           : client?.username
                           ? "PENDING"
-                          : "IN-COMPLETE"}
+                          : "INCOMPLETE"}
                       </span>
                     </td>
                   )}
@@ -278,9 +287,11 @@ export default function Client() {
         onSubmit={() => {
           handleChangePermission(currentRequest?.id, currentRequest?.status);
         }}
-        message={`Are you sure you want to ${
-          currentRequest?.status ? "pause" : "resume"
-        }?`}
+        message={
+          currentRequest?.status
+            ? "Are you sure you want to deactivate the school?"
+            : "Are you sure you want to activate the school?"
+        }
       />
     </div>
   );

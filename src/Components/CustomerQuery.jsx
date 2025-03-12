@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
-import active from "../assets/images/active.png";
-import deleteicon from "../assets/images/delete.png";
+import refresh from "../assets/images/refresh.png";
 import view from "../assets/images/view.png";
 import { axiosClient } from "../services/axiosClient";
 import EndPoints from "../services/EndPoints";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import QueryView from "./QueryView";
+import Breadcrumbs from "./BreadCrumbs";
 
 export default function CustomerQuery() {
-  const navigate = useNavigate();
-  const [selectedTab, setSelectedTab] = useState("All");
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState([]);
-  // const [searchQuery, setSearchQuery] = useState("");
   const [showQueryPopup, setShowQueryPopup] = useState(false);
   const [currentQuery, setCurrentQuery] = useState([]);
-  // const [currentRequest, setCurrentRequest] = useState({});
 
   // Fetches the admin list from the server
   const getQuery = async () => {
@@ -33,51 +29,11 @@ export default function CustomerQuery() {
       setLoading(false);
     }
   };
-  // console.log(requests);
 
   // Load admins data when component mounts
   useEffect(() => {
     getQuery();
   }, []);
-
-  // const filteredRequests = requests.filter((req) => {
-  //   const query = searchQuery.toLowerCase();
-  //   return (
-  //     (selectedTab === "All" ||
-  //       (selectedTab === "Active" &&
-  //         req?.isActive &&
-  //         req?.statusChangeCount !== 0) ||
-  //       (selectedTab === "Inactive" &&
-  //         !req?.isActive &&
-  //         req?.statusChangeCount !== 0) ||
-  //       (selectedTab === "New Requests" &&
-  //         !req?.isActive &&
-  //         req?.statusChangeCount === 0)) &&
-  //     (req?.schoolName?.toLowerCase().includes(query) ||
-  //       req?.city?.toLowerCase().includes(query) ||
-  //       req?.state?.toLowerCase().includes(query) ||
-  //       req?.country?.toLowerCase().includes(query))
-  //   );
-  // });
-
-  // const handleChangePermission = async (id, status) => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await axiosClient.put(
-  //       `${EndPoints.CHANGE_PERMISSION}/${id}`,
-  //       { active: !status }
-  //     );
-  //     if (response?.statusCode === 200) {
-  //       toast.success(response?.result);
-  //       getAdmins();
-  //     }
-  //   } catch (e) {
-  //     toast.error(e);
-  //   } finally {
-  //     setLoading(false);
-  //     setShowConformationPopup(false);
-  //   }
-  // };
 
   return (
     <div className="flex flex-row justify-between pt-4 bg-gray-50">
@@ -85,52 +41,23 @@ export default function CustomerQuery() {
       {/* clients data */}
       <div className="w-full h-[500px] mx-5 bg-white rounded-[14px]">
         <div className="pt-5 px-5 text-[#040320] text-base font-semibold ">
+          <Breadcrumbs />
           Customer Query
         </div>
 
         <div className="flex justify-end items-center mx-2">
-          {/* <div className="flex space-x-4 mt-4">
-            <div className="text-xs font-semibold w-[75px] text-center">
-              Sort by
-            </div>
-            {["All", "Active", "Inactive", "New Requests"].map((tab) => (
-              <div
-                key={tab}
-                className={`cursor-pointer text-xs font-semibold w-[85px] text-center ${
-                  selectedTab === tab
-                    ? "pb-3 border-b-[3px] border-[#4834d4]"
-                    : ""
-                }`}
-                onClick={() => setSelectedTab(tab)}
-              >
-                {tab}
-              </div>
-            ))}
-          </div> */}
           <div className="pb-3">
             <button
-              className="px-4 py-2 text-xs font-semibold border border-black text-black rounded-xl cursor-pointer "
+              className="flex items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
               onClick={() => getQuery()}
             >
               Refresh
+              <img src={refresh} alt="Refresh" className="w-3 h-3 ml-2" />
             </button>
           </div>
         </div>
 
         <hr className="border-[#9391A5]/25 -translate-y-[1px]" />
-
-        {/* <section className="flex justify-between gap-2.5 pl-5 mt-2">
-          <div className="flex items-center gap-2.5 py-2 px-4 bg-blue-50 rounded-2xl w-[410px] text-neutral-400">
-            <input
-              id="clientSearch"
-              type="text"
-              placeholder="Search by School Name, City, State, or Country"
-              className="w-full bg-transparent focus:outline-none"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </section> */}
 
         {/* Client Table */}
         {requests.length > 0 ? (
@@ -143,7 +70,6 @@ export default function CustomerQuery() {
                 <th className="py-2 text-center px-4 border">City</th>
                 <th className="py-2 text-center px-4 border">State</th>
                 <th className="py-2 text-center px-4 border">Action</th>
-                {/* <th className="py-2 text-center px-4 border">Status</th> */}
               </tr>
             </thead>
             <tbody>
