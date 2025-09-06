@@ -48,6 +48,9 @@ const Navbar = () => {
         </div>
 
         <div className="flex space-x-12">
+          <Link to='/subjects' className="text-[#040320] hover:text-[#4834D4] cursor-pointer px-2 py-2 text-base font-bold rounded-md relative">
+            Subjects
+          </Link>
           <Link to='/query' className="text-[#040320] hover:text-[#4834D4] cursor-pointer px-2 py-2 text-base font-bold rounded-md relative">
             Customer Query
           </Link>
